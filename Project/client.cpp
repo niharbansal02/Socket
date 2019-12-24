@@ -24,7 +24,7 @@ class cplug
     {
         sock=socket(AF_INET,SOCK_STREAM,0);
         if(sock==-1)
-            cerr<<" Can't create socket";
+            cerr<<"\033[1;31m Can't create socket\033[0m";
     }
     
     void init_hint_struct()                                         //Sorted
@@ -41,8 +41,8 @@ class cplug
         connectRes=connect(sock,(sockaddr*)&hint,sizeof(hint));
         if(connectRes==-1)
         {
-            cerr<<" Connection failed";
-            return 1;
+            cerr<<"\033[1;31m Connection failed\033[0m";
+            return -1;
         }
     }
     
@@ -58,7 +58,7 @@ int main()
 {
     cplug obj;
     obj.init_hint_struct();
-    if(obj.connect_to_server()==1)
+    if(obj.connect_to_server()==-1)
         exit(0);
     obj.data_to_server();
 
@@ -78,7 +78,7 @@ void cplug::data_to_server()
         int sendRes=send(sock,userInput.c_str(),sizeof(userInput)+1,0);             //+1 because we send the /0 also
         if(sendRes==-1)
         {
-            cerr<<" Coudnot connect to server ";
+            cerr<<"\033[1;31m Coudnot connect to server \033[0m";
             continue;                                                               //It will repeat the loop from start
         }
 
@@ -87,6 +87,6 @@ void cplug::data_to_server()
         int bytesRecieved=recv(sock,buf,4096,0);
 
         // display response
-        cout<<"Server> "<<string(buf,bytesRecieved)<<" \r\n";    
+        cout<<"\033[1;32mServer> "<<string(buf,bytesRecieved)<<" \033[0m\r\n\n";    
     }
 }

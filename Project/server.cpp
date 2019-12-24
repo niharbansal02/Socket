@@ -7,6 +7,7 @@
 #include<string>
 #include<string.h>
 #include<arpa/inet.h>
+#include<stdlib.h>
 
 using namespace std;
 class splug
@@ -20,13 +21,14 @@ class splug
     int result;
     char buf[4096];
     int bytesRecv;
+    string getString;
 
     public:
     splug()
     {
         listening=socket(AF_INET,SOCK_STREAM,0);
         if(listening==-1)
-            cerr<<" Can't create socket. ";
+            cerr<<"\033[1;31m Can't create socket.\033[0m ";
     }
     
     int bind_socket()
@@ -36,7 +38,7 @@ class splug
         inet_pton(AF_INET,"0.0.0.0",&hint.sin_addr);
         if(bind(listening,(sockaddr*)&hint,sizeof(hint))==-1)
         {
-            cerr<<" Can't bind to IP/PORT";
+            cerr<<"\033[1;31m Can't bind to IP/PORT\033[0m";
             return -1;
         }
     }
@@ -45,7 +47,7 @@ class splug
     {
         if(listen(listening,SOMAXCONN)==-1)
         {
-            cerr<<" Can't listen!";
+            cerr<<"\033[1;31m Can't listen!\033[0m";
             return -1;
         }
 
@@ -57,7 +59,7 @@ class splug
         clientSocket=accept(listening,(sockaddr*)&client,&clientSize);
         if(clientSocket==-1)
         {
-            cerr<<" Problem with client connecting!";
+            cerr<<"\033[1;31m Problem with client connecting!\033[0m";
             return -1;
         }
     }
@@ -74,12 +76,12 @@ class splug
         result=getnameinfo((sockaddr*)&client,clientSize,host,NI_MAXHOST,svc,NI_MAXSERV,0);
         if(result)                                                      //result==0
         {
-            cout<<host<<" connected on "<<svc<<endl;
+            cout<<"\033[1;36m"<<host<<"\033[0m connected on "<<"\033[1;33m"<<svc<<"\033[0m"<<endl;
         }
         else
         {
             inet_ntop(AF_INET,&client.sin_addr,host,NI_MAXHOST);
-            cout<<host<<" connected on "<<ntohs(client.sin_port)<<endl;
+            cout<<"\033[1;36m"<<host<<"\033[0m connected on "<<"\033[1;33m"<<ntohs(client.sin_port)<<"\033[0m"<<endl;
         }
     }
 
@@ -119,7 +121,7 @@ void splug::data_to_client()
 
         // Wait for message
         int bytesRecv=recv(clientSocket,buf,4096,0);
-        if(bytesRecv==-1)
+        if(bytesRecv==-1)                                                       
         {
             cerr<<" There was a connection issue"<<endl;
             break;
@@ -131,10 +133,14 @@ void splug::data_to_client()
         }     
         
         //Displady message 
-        cout<<"Recieved: "<<string(buf,0,bytesRecv)<<endl;               // Changed string to (char*)&
+        cout<<"\033[1;32mRecieved: "<<string(buf,0,bytesRecv)<<"\033[0m"<<endl;               // Changed string to (char*)&
         
-        //Resend Message    
+        //Resend Message
+        // system("color 02");                                          //sh color command not found
+        // cout<<"> ";
+        // getline(cin,getString);
+        // send(clientSocket,getString.c_str(),sizeof(getString)+1,0);
+        // cout << "\033[1;31mbold red text\033[0m\n";
         send(clientSocket,buf,bytesRecv+1,0);
-  
     }
 }
