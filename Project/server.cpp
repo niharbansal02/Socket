@@ -1,13 +1,5 @@
 //Working fine
-#include<iostream>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<unistd.h>
-#include<netdb.h>
-#include<string>
-#include<string.h>
-#include<arpa/inet.h>
-#include<stdlib.h>
+#include"sock_macro.cpp"
 
 using namespace std;
 class splug
@@ -21,7 +13,7 @@ class splug
     int result;
     char buf[4096];
     int bytesRecv;
-    string getString;
+    string getString;                           //Test var.
 
     public:
     splug()
@@ -97,6 +89,7 @@ class splug
 
 int main()
 {
+    cout<<0<<endl;
     splug obj;
     if(obj.bind_socket()==-1)
         exit(0);
@@ -117,10 +110,13 @@ void splug::data_to_client()
     while(true)
     {
         //Clear the buffer
-        memset(buf,0,4096);
-
+        // memset(buf,0,4096);
+        strcpy(buf,"0");
+       
         // Wait for message
-        int bytesRecv=recv(clientSocket,buf,4096,0);
+        bytesRecv=recv(clientSocket,test,sizeof(test),0);            //recv() function recieves data from client
+        //recv(socket,variable to store,size of variable,flags)
+       
         if(bytesRecv==-1)                                                       
         {
             cerr<<" There was a connection issue"<<endl;
@@ -131,16 +127,19 @@ void splug::data_to_client()
             cout<<" The client disconnected"<<endl;
             break;
         }     
-        
+
         //Displady message 
-        cout<<"\033[1;32mRecieved: "<<string(buf,0,bytesRecv)<<"\033[0m"<<endl;               // Changed string to (char*)&
-        
-        //Resend Message
-        // system("color 02");                                          //sh color command not found
-        // cout<<"> ";
-        // getline(cin,getString);
-        // send(clientSocket,getString.c_str(),sizeof(getString)+1,0);
-        // cout << "\033[1;31mbold red text\033[0m\n";
-        send(clientSocket,buf,bytesRecv+1,0);
+        cout<<"\033[1;32mClient: "<<string(buf,0,bytesRecv)<<"\033[0m"<<endl;
+        if(strcmp(buf,"a")==0)
+            send(clientSocket,corr,sizeof(corr),0);
+        else if(strcmp(buf,"b")==0)
+            send(clientSocket,incorr,sizeof(incorr),0);
+        else if(strcmp(buf,"c")==0)
+            send(clientSocket,incorr,sizeof(incorr),0);
+        else if(strcmp(buf,"d")==0)
+            send(clientSocket,incorr,sizeof(incorr),0);
+        else
+            send(clientSocket,def,sizeof(def),0);
+
     }
 }

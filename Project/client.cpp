@@ -1,21 +1,14 @@
-#include<iostream>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<unistd.h>
-#include<netdb.h>
-#include<string>
-#include<string.h>
-#include<arpa/inet.h>
-#include<stdlib.h>
+#include"sock_macro.cpp"
 
 using namespace std;
 class cplug
 {
+    string ch;                            //Test var.
     int sock;
     int port;
     int connectRes;
     string ipAddress;
-    char buf[4096];
+    char buf[4608];
     string userInput;
     sockaddr_in hint;
     
@@ -24,7 +17,7 @@ class cplug
     {
         sock=socket(AF_INET,SOCK_STREAM,0);
         if(sock==-1)
-            cerr<<"\033[1;31m Can't create socket\033[0m";
+            cerr<<"\033[1;31mCan't create socket\033[0m";
     }
     
     void init_hint_struct()                                         //Sorted
@@ -41,7 +34,7 @@ class cplug
         connectRes=connect(sock,(sockaddr*)&hint,sizeof(hint));
         if(connectRes==-1)
         {
-            cerr<<"\033[1;31m Connection failed\033[0m";
+            cerr<<"\033[1;31mConnection failed\033[0m";
             return -1;
         }
     }
@@ -69,13 +62,14 @@ void cplug::data_to_server()
 {
     while(true)
     {
-
+        /*
         // Enter lines of text
         cout<<"> ";
         getline(cin,userInput);
 
         // sent to server
         int sendRes=send(sock,userInput.c_str(),sizeof(userInput)+1,0);             //+1 because we send the /0 also
+        // send() function sends data to server
         if(sendRes==-1)
         {
             cerr<<"\033[1;31m Coudnot connect to server \033[0m";
@@ -88,5 +82,24 @@ void cplug::data_to_server()
 
         // display response
         cout<<"\033[1;32mServer> "<<string(buf,bytesRecieved)<<" \033[0m\r\n\n";    
+        */
+        cout<<"\n Welcome to quiz game";
+        cout<<"\n What is 2+2 "<<endl;
+        cout<<" a. 4\t b.6\n c. 8\t d. 10"<<endl;
+        
+        for_each(ch.begin(),ch.end(),[](char &c)
+        {
+            c=tolower(c);
+        });
+        if(send(sock,ch.c_str(),sizeof(ch)+1,0)==-1)                        
+        {
+            cerr<<"\033[1;31mCoudnot send data to server \033[0m";
+            break;
+        }
+        int bytesRecieved=recv(sock,buf,4096,0);
+
+        // display response
+        cout<<"\033[1;32m "<<string(buf,bytesRecieved)<<" \033[0m\r\n\n";
+        
     }
-}
+} 
